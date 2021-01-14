@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156034854-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-156034854-1');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="description" content="G-XIAKE.com is a website which is able to calibrate your radio-controlled-clock">
+  <meta name="keywords" content="G-SHOCK,G-XIAKE,CASIO,casio multiband 6">
+  <meta name="author" content="ZenW">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>G-XIAKE | g-xiake.com</title>
+  <style>
+    body{
+      font-family: Montserrat,Arial,Helvetica,sans-serif;
+    }
+    .cb{
+      clear: both;
+    }
+    #root{
+      width: 1024px;
+      margin: 20px auto 50px auto;
+    }
+    #logo{
+      width: 100%;
+      text-align: center;
+    }
+    #logo img{
+      width: 300px;
+    }
+    .text_item_description{
+      color: lightgray;
+    }
+    .text_item{
+      font-size: 40px;
+    }
+    .page_left{
+      float: left;
+      width: 48%;
+      margin: 10px;
+    }
+    .page_right{
+      float: left;
+      width: 48%;
+      margin: 10px;
+    }
+  </style>
+  <script src="https://unpkg.com/bpc.js@0.0.2/bpc.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    function logoBlink() {
+      var handle = 0;
+      var logoDOM = document.getElementById('logo');
+      logoDOM.style.opacity = 0;
+      handle = setInterval(function() {
+        console.log(logoDOM.style.opacity);
+        logoDOM.style.opacity = parseFloat(logoDOM.style.opacity) + 0.05;
+        console.log(logoDOM.style.opacity);
+        if (logoDOM.style.opacity >= 1){
+          logoDOM.style.opacity = 1
+          clearInterval(handle);
+        }
+      }, 0.05 * 1e3);
+    }
+    var stopFunc = null;
+    function startTesting() {
+      stop();
+      stopFunc = BPCStart(Date.UTC(2011,10,11,11,11,9,0)-(3600*1e3)*8, function(data) {
+        logoBlink();
+        var frames = data.frames || {};
+        if (data) {
+          if (data.countdown > 0) {
+            document.getElementById('testing_status').innerHTML = 'countdown: ' + data.countdown;
+          } else {
+            // document.getElementById('logo').style.opacity = 0;
+            // var logoI = 0;
+            // setTimeout(function() {
+            //   document.getElementById('logo').style.opacity = Date.now() % 1e3 / 1e3 + 0.5;
+            // }, 0.1 * 1e3);
+            document.getElementById('testing_status').innerHTML = 
+              'Cailbrating to: ' +
+              (2000 + parseInt(frames.year, 2)) + '/' +
+              parseInt(frames.month, 2) + '/' +
+              parseInt(frames.day, 2) + ' ' +
+              parseInt(frames.hour, 2) + ':' +
+              parseInt(frames.minute, 2) +
+              ' day of week: ' + parseInt(frames.dayOfWeek, 2) +
+              ' GMT+8';
+          }
+        }
+      });
+    }
+    function start() {
+      stop();
+      stopFunc = BPCStart(function(data) {
+        logoBlink();
+        var frames = data.frames || {};
+        if (data) {
+          if (data.countdown > 0) {
+            document.getElementById('status').innerHTML = 'countdown: ' + data.countdown;
+          } else {
+            document.getElementById('status').innerHTML = 
+              'Cailbrating to: ' +
+              (2000 + parseInt(frames.year, 2)) + '/' +
+              parseInt(frames.month, 2) + '/' +
+              parseInt(frames.day, 2) + ' ' +
+              parseInt(frames.hour, 2) + ':' +
+              parseInt(frames.minute, 2) +
+              ' day of week: ' + parseInt(frames.dayOfWeek, 2) +
+              ' GMT+8';
+          }
+        }
+      });
+    }
+    function stop() {
+      if (stopFunc) stopFunc();
+      document.getElementById('status').innerHTML = '';
+      document.getElementById('testing_status').innerHTML = '';
+    }
+  </script>
+  <script>
+    window.onload = function() {
+      if(!window.AudioContext && !window.webkitAudioContext) {
+        alert('For creating the BPC, we need your web browser supports WebAudio.\nHowever, this browser does not support that.');
+      }
+
+      var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      var isMobileDevice = false;
+      if (/windows phone/i.test(userAgent)) {
+        isMobileDevice = true;
+      }
+      if (/android/i.test(userAgent)) {
+        isMobileDevice = true;
+      }
+      // iOS detection from: http://stackoverflow.com/a/9039885/177710
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        isMobileDevice = true;
+      }
+      if (isMobileDevice) {
+        alert('Please use Chrome or Firefox in desktop version.');
+      }
+
+      var localTime = new Date();
+      var localOffset = localTime.getTimezoneOffset() * 60000;
+
+      var startClockHandle = 0;
+      function startClock() {
+        setTimeout(function() {
+          var now = Date.now();
+          var utc = now + localOffset;
+          var hktObj = new Date(utc + ((3600 * 1e3) * 8));
+          document.getElementById('local_current_time').innerHTML = Date();
+          document.getElementById('gmtplus8_current_time').innerHTML = [
+            (hktObj.getFullYear()),
+            '/',
+            (hktObj.getMonth() + 1),
+            '/',
+            (hktObj.getDate()),
+            ' ',
+            (hktObj.getHours()),
+            ':',
+            (hktObj.getMinutes()),
+            ':',
+            (hktObj.getSeconds()),
+          ].join('');
+          startClock();
+        }, 1e3 - Date.now() % 1e3);
+      }
+      startClock();
+
+    };
+  </script>
+  </head>
+  <body>
+    <div id="root">
+      <div>
+        <a href="/zh">中文简体</a> | Web BPC | G-XIAKE.com is a website which is able to calibrate your radio-controlled-clock.
+      </div>
+      <hr/>
+      <div>
+        For the MacBook pro which is 2016 model and later(the logo can not be able to light up), please connect your earphone to the computer with 3.5cm phone jack then wind the earphone wire in a loop which has the same diameter as your watch.
+      </div>
+      <hr/>
+      <div id="logo">
+        <img src="../g-xiake.png" />
+      </div>
+      <div class="text_item text_item_description">
+        Your clock:
+      </div>
+      <div class="text_item" id="local_current_time">
+        ---
+      </div>
+      <div  class="text_item text_item_description">
+        Convert to GMT+8: 
+        <span  class="text_item" style="color:black;" id="gmtplus8_current_time">
+          ---
+        </span>
+      </div>
+      
+      <hr/>
+      <div class="page_left">
+        <div>
+          <h3>Calibrating:</h3>
+          
+          Step 1: Close all other voice source softwares of this computer.
+          <br/>
+          Step 2: Unmute and turn up the volume of this computer speaker.
+          <br/>
+          Step 3: Change the city time settings of your watch or clock to HKT or BJS.
+          <br/>
+          Step 4: Launch the time calibrating manually in your watch or clock.
+          <br/>
+          Step 5: Put your watch or clock as near as possible to this computer speaker.
+        </div>
+        <div>
+          Step 6: Click the button below and keep this page being front of other window.
+          <div>
+            <button style="width: 300px; height: 50px; font-size: 15px;" onclick="start()">
+              Start calibrating
+            </button>
+            <button style="width: 300px; height: 50px; font-size: 15px;" onclick="stop()">
+              Stop
+            </button>
+            <div id="status">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page_right">
+        <h3>
+          Checking:
+        </h3>
+        <div>
+          Check if your watch is a radio-controlled-clock.
+          <br/>
+          It will be a radio-controlled-clock if your watch is able to be calibrated back to 2011/11/11.
+          <h5 style="color: red;">This checking is for reference only, we do not guarantee the accuracy of the results</h5>
+        </div>
+        <div>
+          <button style="width: 300px; height: 50px; font-size: 15px;" onclick="startTesting()">
+            Calibrate to 2011/11/11 GMT+8
+          </button>
+          <button style="width: 300px; height: 50px; font-size: 15px;" onclick="stop()">
+            Stop
+          </button>
+          <div id="testing_status">
+          </div>
+        </div>
+      </div>
+      <div class="cb">
+        <hr/>
+        <a href="https://zenw.me">ZenW</a>
+      </div>
+    </div>
+  </body>
+</html>
